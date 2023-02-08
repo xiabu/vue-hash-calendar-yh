@@ -107,6 +107,11 @@ let timer = null;
 export default {
   name: 'Calendar',
   props: {
+    // 是否只补齐最后一行，非必须6行
+    isFillLastDays: {
+      type: Boolean,
+      default: false,
+    },
     // 最小可选日期
     minDate: {
       type: Date,
@@ -509,6 +514,10 @@ export default {
       // 在日历后面填充下个月的日期，补齐6行7列
       let fillDays =
         this.calendarDaysTotalLength - calendarOfCurrentMonth.length;
+      // 只补齐最后一行
+      if (fillDays >= 7 && this.isFillLastDays) {
+        fillDays = 7 - (calendarOfCurrentMonth.length % 7)
+      }
       for (let i = 0; i < fillDays; i++) {
         calendarOfCurrentMonth.push({
           year: nextMonthYear,

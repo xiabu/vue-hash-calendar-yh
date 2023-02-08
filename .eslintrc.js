@@ -32,13 +32,6 @@ module.exports = {
   plugins: ["vue", "promise"],
   // add your custom rules here
   rules: {
-    //禁止注册模板中未使用的组件
-    "vue/no-unused-components": [
-      "warn",
-      {
-        ignoreWhenBindingPresent: true,
-      },
-    ],
     // allow async-await
     "generator-star-spacing": "off",
     // allow debugger during development

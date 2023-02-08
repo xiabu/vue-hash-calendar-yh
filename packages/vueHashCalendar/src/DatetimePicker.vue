@@ -164,6 +164,11 @@ const defaultDate = {
 
 export default {
   props: {
+    // 是否只补齐最后一行，非必须6行
+    isFillLastDays: {
+      type: Boolean,
+      default: false,
+    },
     // 主题颜色
     themeColor: {
       type: Object,
