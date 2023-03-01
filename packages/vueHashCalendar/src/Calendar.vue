@@ -5,11 +5,7 @@
 * @CreateDate:     2019/5/26 22:53
 */
 <template>
-  <div
-    class="calendar_body"
-    :style="{ 'margin-top': calendarTitleHeight + 'px' }"
-    v-show="show"
-  >
+  <div class="calendar_body" :style="{ 'margin-top': calendarTitleHeight + 'px' }" v-show="show">
     <div class="calendar_week" ref="weekTitle">
       <div class="calendar_item" v-for="item in calendarWeek" :key="item">
         <p class="calendar_day">
@@ -19,43 +15,19 @@
         </p>
       </div>
     </div>
-    <div
-      class="calendar_group"
-      :style="{ height: `${calendarGroupHeight}px` }"
-      ref="calendar"
-      @touchstart="touchStart"
-      @touchmove="touchMove"
-      @touchend="touchEnd"
-    >
-      <ul
-        :style="{ transform: `translate3d(${-translateIndex * 100}%, 0, 0)` }"
-      >
-        <li
-          class="calendar_group_li"
-          v-for="(item, i) in calendarOfMonthShow"
-          :key="i"
-          :style="{
+    <div class="calendar_group" :style="{ height: `${calendarGroupHeight}px` }" ref="calendar" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
+      <ul :style="{ transform: `translate3d(${-translateIndex * 100}%, 0, 0)` }">
+        <li class="calendar_group_li" v-for="(item, i) in calendarOfMonthShow" :key="i" :style="{
             transform: `translate3d(${
               (i - 1 + translateIndex + (isTouching ? touch.x : 0)) * 100
             }%, ${calendarY}px, 0)`,
             transitionDuration: `${isTouching ? 0 : transitionDuration}s`,
-          }"
-        >
-          <div
-            class="calendar_item"
-            ref="calendarItem"
-            v-for="(date, j) in item"
-            :class="
+          }">
+          <div class="calendar_item" ref="calendarItem" v-for="(date, j) in item" :class="
               formatDisabledDate(date) &&
               (disabledClassName || 'calendar_item_disable')
-            "
-            :key="i + j"
-            @click="clickCalendarDay(date, j)"
-          >
-            <div
-              class="calendar_day"
-              :style="{ 'border-color': markDateColor(date, 'circle') }"
-              :class="[
+            " :key="i + j" @click="clickCalendarDay(date, j)">
+            <div class="calendar_day" :style="{ 'border-color': markDateColor(date, 'circle') }" :class="[
                 isFirstDayOfMonth(date, i) &&
                   (firstDayOfMonthClassName || 'calendar_first_today'),
                 isToday(date) && (todayClassName || 'calendar_day_today'),
@@ -64,12 +36,8 @@
                 isNotCurrentMonthDay(date, i) &&
                   (notCurrentMonthDayClassName || 'calendar_day_not'),
                 markDateColor(date, 'circle') && 'calendar_mark_circle',
-              ]"
-            >
-              <slot
-                name="day"
-                :date="date"
-                :extendAttr="{
+              ]">
+              <slot name="day" :date="date" :extendAttr="{
                   isMarked: !!(
                     markDateColor(date, 'circle') || markDateColor(date, 'dot')
                   ),
@@ -78,8 +46,7 @@
                   isChecked: isCheckedDay(date),
                   isCurrentMonthDay: !isNotCurrentMonthDay(date, i),
                   isFirstDayOfMonth: isFirstDayOfMonth(date, i),
-                }"
-              >
+                }">
                 {{
                   isFirstDayOfMonth(date, i)
                     ? language.MONTH && language.MONTH[date.month]
@@ -87,10 +54,7 @@
                 }}
               </slot>
             </div>
-            <div
-              :style="{ background: markDateColor(date, 'dot') }"
-              class="calendar_dot"
-            ></div>
+            <div :style="{ background: markDateColor(date, 'dot') }" class="calendar_dot"></div>
           </div>
         </li>
       </ul>
@@ -107,6 +71,11 @@ let timer = null;
 export default {
   name: 'Calendar',
   props: {
+    // 周视图是否设置非本月日期
+    isWeekSetMonthDay: {
+      type: Boolean,
+      default: false,
+    },
     // 是否只补齐最后一行，非必须6行
     isFillLastDays: {
       type: Boolean,
@@ -164,7 +133,7 @@ export default {
     },
     defaultDate: {
       type: Date,
-      default() {
+      default () {
         return new Date();
       },
     },
@@ -219,7 +188,7 @@ export default {
       default: 'CN',
     },
   },
-  data() {
+  data () {
     return {
       language: {}, // 使用的语言包
       yearOfCurrentShow: new Date().getFullYear(), // 当前日历展示的年份
@@ -268,7 +237,7 @@ export default {
       markDateTypeObj: {}, // 所有被标记的日期所对应的标记类型
     };
   },
-  mounted() {
+  mounted () {
     this.language = languageUtil[this.lang.toUpperCase()];
     this.calendarWeek = this.language.WEEK;
     this.weekStartIndex = this.weekArray.indexOf(this.weekStart.toLowerCase());
@@ -279,7 +248,7 @@ export default {
   },
   watch: {
     markDate: {
-      handler(val) {
+      handler (val) {
         val.forEach((item, index) => {
           if (!item.color) {
             let obj = {};
@@ -307,14 +276,14 @@ export default {
       deep: true,
       immediate: true,
     },
-    weekStartIndex() {
+    weekStartIndex () {
       this.calculateCalendarOfThreeMonth(
         this.checkedDate.year,
         this.checkedDate.month
       );
     },
     defaultDate: {
-      handler(val) {
+      handler (val) {
         if (!(val instanceof Date)) {
           throw new Error(
             'The calendar component\'s defaultDate must be date type!'
@@ -333,14 +302,14 @@ export default {
       immediate: true,
     },
     checkedDate: {
-      handler(val) {
+      handler (val) {
         this.$emit('change', val);
       },
       deep: true,
       immediate: true,
     },
     show: {
-      handler(val) {
+      handler (val) {
         if (val) {
           this.calculateCalendarOfThreeMonth(
             this.checkedDate.year,
@@ -352,7 +321,7 @@ export default {
       immediate: true,
     },
     isShowWeek: {
-      handler(val) {
+      handler (val) {
         if (val) {
           this.$nextTick(() => {
             this.showWeek();
@@ -365,24 +334,24 @@ export default {
       },
       immediate: true,
     },
-    calendarGroupHeight(val) {
+    calendarGroupHeight (val) {
       this.$emit('height', val + this.calendarWeekTitleHeight);
     },
   },
   computed: {
     // 当前日历是否以星期方式展示
     isShowWeek: {
-      get() {
+      get () {
         return this.isShowWeekView;
       },
-      set(val) {
+      set (val) {
         this.$emit('update:isShowWeekView', val);
       },
     },
   },
   methods: {
     // 初始化日历dom
-    initDom() {
+    initDom () {
       this.$nextTick(() => {
         this.calendarItemHeight =
           this.$refs.calendarItem && this.$refs.calendarItem[0].offsetHeight;
@@ -403,7 +372,7 @@ export default {
       });
     },
     // 今天
-    today() {
+    today () {
       this.$set(this.checkedDate, 'day', new Date().getDate());
 
       this.yearOfCurrentShow = new Date().getFullYear(); // 当前日历展示的年份
@@ -424,11 +393,11 @@ export default {
       }
     },
     // 是否为当前月的第一天
-    isFirstDayOfMonth(date, i) {
+    isFirstDayOfMonth (date, i) {
       return date.day === 1 && !this.isNotCurrentMonthDay(date, i);
     },
     // 计算当前展示月份的前后月份日历信息 flag  -1:获取上个月日历信息   0:当月信息或者跨月展示日历信息  1:获取下个月日历信息
-    calculateCalendarOfThreeMonth(
+    calculateCalendarOfThreeMonth (
       year = new Date().getFullYear(),
       month = new Date().getMonth()
     ) {
@@ -473,7 +442,7 @@ export default {
       this.$set(this.checkedDate, 'month', month);
     },
     // 计算每个月的日历
-    calculateCalendarOfMonth(
+    calculateCalendarOfMonth (
       year = new Date().getFullYear(),
       month = new Date().getMonth()
     ) {
@@ -528,7 +497,7 @@ export default {
 
       return calendarOfCurrentMonth;
     },
-    daysOfMonth(year) {
+    daysOfMonth (year) {
       return [
         31,
         28 + this.isLeap(year),
@@ -545,17 +514,17 @@ export default {
       ];
     },
     // 判断是否为闰年
-    isLeap(year) {
+    isLeap (year) {
       return year % 4 === 0
         ? year % 100 !== 0
           ? 1
           : year % 400 === 0
-          ? 1
-          : 0
+            ? 1
+            : 0
         : 0;
     },
     // 获取月份某一天是星期几
-    getDayOfWeek(
+    getDayOfWeek (
       year = new Date().getFullYear(),
       month = new Date().getMonth(),
       day = 1
@@ -565,7 +534,7 @@ export default {
       return dayOfWeek;
     },
     // 点击日历上的日期
-    clickCalendarDay(date, index) {
+    clickCalendarDay (date, index) {
       if (!date || !date.day) return;
 
       if (this.formatDisabledDate(date)) return;
@@ -599,7 +568,7 @@ export default {
       this.$emit('click', this.checkedDate);
     },
     // 该日期是否为今天
-    isToday(date) {
+    isToday (date) {
       return (
         this.yearOfToday === date.year &&
         this.monthOfToday === date.month &&
@@ -607,7 +576,7 @@ export default {
       );
     },
     // 该日期是否为选中的日期
-    isCheckedDay(date) {
+    isCheckedDay (date) {
       if (this.formatDisabledDate(date)) return false;
 
       return (
@@ -617,15 +586,19 @@ export default {
       );
     },
     // 非本月日期
-    isNotCurrentMonthDay(date, index) {
-      let dateOfCurrentShow = this.calendarOfMonth[index][15]; // 本月中间的日期一定为本月
-      return (
-        date.year !== dateOfCurrentShow.year ||
-        date.month !== dateOfCurrentShow.month
-      );
+    isNotCurrentMonthDay (date, index) {
+      if (this.isShowWeek && this.isWeekSetMonthDay) {
+        return false
+      } else {
+        let dateOfCurrentShow = this.calendarOfMonth[index][15]; // 本月中间的日期一定为本月
+        return (
+          date.year !== dateOfCurrentShow.year ||
+          date.month !== dateOfCurrentShow.month
+        );
+      }
     },
     // 监听手指开始滑动事件
-    touchStart(event) {
+    touchStart (event) {
       this.$emit('touchstart', event);
 
       this.touchStartPositionX = event.touches[0].clientX;
@@ -636,7 +609,7 @@ export default {
       this.isTouching = true;
     },
     // 监听手指移动事件
-    touchMove(event) {
+    touchMove (event) {
       this.$emit('touchmove', event);
 
       // fix: 禁止切换周模式显示后，日历区域上下滑动，页面不能触发上下滑动了 #62
@@ -669,7 +642,7 @@ export default {
       this.setDisabledScrollDirection();
     },
     // 监听touch结束事件
-    touchEnd(e) {
+    touchEnd (e) {
       this.$emit('touchend', e);
 
       this.isTouching = false;
@@ -714,7 +687,7 @@ export default {
       }
     },
     // 日历以月份方式展示
-    showMonth() {
+    showMonth () {
       this.calendarY = 0;
       this.isShowWeek = false;
       this.calendarGroupHeight = this.calendarItemHeight * 6;
@@ -728,7 +701,7 @@ export default {
       );
     },
     // 日历以星期方式展示
-    showWeek(checkedDate = this.checkedDate) {
+    showWeek (checkedDate = this.checkedDate) {
       console.log(JSON.stringify(checkedDate));
       let daysArr = [];
       this.calendarOfMonth[1].forEach((item) => {
@@ -815,7 +788,7 @@ export default {
       this.calendarOfMonthShow[2].splice(sliceStart, 7, ...this.nextWeek);
     },
     // 切换展示的星期
-    changeWeekView({ isNext }) {
+    changeWeekView ({ isNext }) {
       if (timer) timer = null;
 
       timer = setTimeout(() => {
@@ -824,7 +797,7 @@ export default {
       }, this.transitionDuration * 1000);
     },
     // 显示上一周
-    getLastWeek() {
+    getLastWeek () {
       let checkedDate = this.lastWeek[this.selectedDayIndex];
       this.showWeek(checkedDate);
 
@@ -835,7 +808,7 @@ export default {
       this.checkedDate = checkedDate;
     },
     // 显示下一周
-    getNextWeek() {
+    getNextWeek () {
       let checkedDate = this.nextWeek[this.selectedDayIndex];
       this.showWeek(checkedDate);
 
@@ -846,7 +819,7 @@ export default {
       this.checkedDate = checkedDate;
     },
     // 获取上个月日历
-    getLastMonth() {
+    getLastMonth () {
       this.translateIndex += 1;
 
       if (!this.isLastWeekInCurrentMonth) {
@@ -860,7 +833,7 @@ export default {
       );
     },
     // 获取下个月日历
-    getNextMonth() {
+    getNextMonth () {
       this.translateIndex -= 1;
 
       if (!this.isNextWeekInCurrentMonth) {
@@ -874,7 +847,7 @@ export default {
       );
     },
     // 当前日期是否需要标记
-    markDateColor(date, type) {
+    markDateColor (date, type) {
       let dateString = `${date.year}/${this.fillNumber(
         date.month + 1
       )}/${this.fillNumber(date.day)}`;
@@ -884,7 +857,7 @@ export default {
 
       return this.markDateColorObj[dateString];
     },
-    formatDisabledDate(date) {
+    formatDisabledDate (date) {
       if (!date.day) return;
 
       let fDate = new Date(`${date.year}/${date.month + 1}/${date.day}`);
@@ -895,28 +868,25 @@ export default {
       );
     },
     // 禁止继续往横向的当前方向滑动 （当设置 minDate 或 maxDate 时生效）
-    isDisabledHorizontalScroll(direc) {
+    isDisabledHorizontalScroll (direc) {
       let minDate =
         this.minDate && this.minDate.getTime() - 24 * 60 * 60 * 1000;
       let maxDate = this.maxDate && this.maxDate.getTime();
 
       if (this.isShowWeek) {
         let lastWeekLastedDay = new Date(
-          `${this.lastWeek[6].year}/${this.lastWeek[6].month + 1}/${
-            this.lastWeek[6].day
+          `${this.lastWeek[6].year}/${this.lastWeek[6].month + 1}/${this.lastWeek[6].day
           }`
         ).getTime();
         let nextWeekFirstDay = new Date(
-          `${this.nextWeek[0].year}/${this.nextWeek[0].month + 1}/${
-            this.nextWeek[0].day
+          `${this.nextWeek[0].year}/${this.nextWeek[0].month + 1}/${this.nextWeek[0].day
           }`
         ).getTime();
         if (direc === 'left' && maxDate) return nextWeekFirstDay >= maxDate;
         if (direc === 'right' && minDate) return lastWeekLastedDay <= minDate;
       } else {
         let lastMonthLastedDay = new Date(
-          `${this.lastMonthYear}/${this.lastMonth + 1}/${
-            this.daysOfMonth(this.lastMonthYear)[this.lastMonth]
+          `${this.lastMonthYear}/${this.lastMonth + 1}/${this.daysOfMonth(this.lastMonthYear)[this.lastMonth]
           }`
         ).getTime();
         let nextMonthFirstDay = new Date(
@@ -929,11 +899,11 @@ export default {
       return false;
     },
     // 小于10，在前面补0
-    fillNumber(val) {
+    fillNumber (val) {
       return val > 9 ? val : '0' + val;
     },
     // 日期格式转换
-    dateFormat(dateArr) {
+    dateFormat (dateArr) {
       dateArr.forEach((date, index) => {
         dateArr[index] = formatDate(date, 'YY/MM/DD');
       });
@@ -941,7 +911,7 @@ export default {
       return dateArr;
     },
     // 是否可以滑动
-    isCanScroll(dire) {
+    isCanScroll (dire) {
       const scrollObj = {
         up: [true, 'up', 'vertical'],
         down: [true, 'down', 'vertical'],
@@ -953,7 +923,7 @@ export default {
       return !checkedScrollArr.some((item) => item === this.disabledScroll);
     },
     // 设置禁止滑动的方向
-    setDisabledScrollDirection() {
+    setDisabledScrollDirection () {
       this.touch.x < 0 && !this.isCanScroll('left') && (this.touch.x = 0);
       this.touch.x > 0 && !this.isCanScroll('right') && (this.touch.x = 0);
       this.touch.y < 0 && !this.isCanScroll('up') && (this.touch.y = 0);
@@ -964,106 +934,76 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import '../style/common.styl';
-
-.calendar_body {
-  position: relative;
-  width: 100%;
-  margin-top: px2vw(100px);
-}
-
-.calendar_week {
-  position: absolute;
-  width: 100%;
-  left: 0;
-  top: 0;
-  flexAlign();
-  background: white;
-  viceFontColor(color);
-  z-index: 2;
-}
-
-.calendar_group {
-  position: absolute;
-  top: px2vw(70px);
-  left: 0;
-  bottom: 0;
-  right: 0;
-  overflow: hidden;
-  transition: height 0.3s;
-  -webkit-transition: height 0.3s;
-}
-
-.calendar_group ul {
-  height: 100%;
-}
-
-.calendar_group_li {
-  position: absolute;
-  top: 0;
-  left: px2vw(4px);
-  bottom: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  flexAlign();
-  flex-wrap: wrap;
-  background: white;
-  will-change: transform;
-}
-
-.calendar_item {
-  width: 14.13333335%;
-  flexContent();
-  flex-direction: column;
-  padding: 2px 0;
-}
-
-.calendar_item_disable {
-  disabledBgColor(background-color);
-  opacity: 1;
-  cursor: not-allowed;
-  disabledFontColor(color);
-}
-
-.calendar_day {
-  width: px2vw(60px);
-  height: px2vw(60px);
-  border-radius: 50%;
-  fontSize(28px);
-  flexContent();
-  margin-bottom: px2vw(5px);
-}
-
-.calendar_first_today {
-  mainColor(color);
-}
-
-.calendar_first_today span {
-  fontSize(20px);
-  margin-top: px2vw(3px);
-}
-
-.calendar_day_today {
-  bgColor(background);
-}
-
-.calendar_mark_circle {
-  mainColor(border);
-}
-
-.calendar_day_not {
-  disabledFontColor(color);
-}
-
-.calendar_day_checked {
-  mainColor(background);
-  color: white;
-}
-
-.calendar_dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-}
+@import '../style/common.styl'
+.calendar_body
+  position: relative
+  width: 100%
+  margin-top: px2vw(100px)
+.calendar_week
+  position: absolute
+  width: 100%
+  left: 0
+  top: 0
+  flexAlign()
+  background: white
+  viceFontColor(color)
+  z-index: 2
+.calendar_group
+  position: absolute
+  top: px2vw(70px)
+  left: 0
+  bottom: 0
+  right: 0
+  overflow: hidden
+  transition: height 0.3s
+  -webkit-transition: height 0.3s
+.calendar_group ul
+  height: 100%
+.calendar_group_li
+  position: absolute
+  top: 0
+  left: px2vw(4px)
+  bottom: 0
+  right: 0
+  height: 100%
+  width: 100%
+  flexAlign()
+  flex-wrap: wrap
+  background: white
+  will-change: transform
+.calendar_item
+  width: 14.13333335%
+  flexContent()
+  flex-direction: column
+  padding: 2px 0
+.calendar_item_disable
+  disabledBgColor(background-color)
+  opacity: 1
+  cursor: not-allowed
+  disabledFontColor(color)
+.calendar_day
+  width: px2vw(60px)
+  height: px2vw(60px)
+  border-radius: 50%
+  fontSize(28px)
+  flexContent()
+  margin-bottom: px2vw(5px)
+.calendar_first_today
+  mainColor(color)
+.calendar_first_today span
+  fontSize(20px)
+  margin-top: px2vw(3px)
+.calendar_day_today
+  bgColor(background)
+.calendar_mark_circle
+  mainColor(border)
+.calendar_day_not
+  disabledFontColor(color)
+.calendar_day_checked
+  mainColor(background)
+  color: white
+.calendar_dot
+  width: 5px
+  height: 5px
+  border-radius: 50%
 </style>

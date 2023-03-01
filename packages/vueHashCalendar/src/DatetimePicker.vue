@@ -164,6 +164,11 @@ const defaultDate = {
 
 export default {
   props: {
+    // 周视图是否设置非本月日期
+    isWeekSetMonthDay: {
+      type: Boolean,
+      default: false,
+    },
     // 是否只补齐最后一行，非必须6行
     isFillLastDays: {
       type: Boolean,
